@@ -10,7 +10,7 @@
 import os
 import logging
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))+"/../")
 log_path = os.path.join(BASE_DIR, 'logs')
 log_size = 1024*1024*10   # 文件大小，10M
 backup_count = 10
@@ -20,7 +20,12 @@ LOG_SETTINGS = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '[{levelname} {asctime} {process:d} {thread:d} {module}-{funcName}:{lineno}] {message}',
+            'format': '[{levelname} {asctime} {process:d} {thread:d} {module}-{filename}-{funcName}:{lineno}] {message}',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+            'style': '{',
+        },
+        'default': {
+            'format': '[{levelname} {asctime} {module}-{filename}-{funcName}:{lineno}] {message}',
             'datefmt': '%Y-%m-%d %H:%M:%S',
             'style': '{',
         },
@@ -62,7 +67,7 @@ LOG_SETTINGS = {
             'filename': '{0}/all.log'.format(log_path),
             'maxBytes': log_size,
             'backupCount': backup_count,
-            'formatter': 'verbose'
+            'formatter': 'default'
         },
         'file_error': {
             'level': logging.ERROR,
@@ -70,7 +75,7 @@ LOG_SETTINGS = {
             'filename': '{0}/error.log'.format(log_path),
             'maxBytes': log_size,
             'backupCount': backup_count,
-            'formatter': 'verbose'
+            'formatter': 'default'
         }
     },
     'loggers': {
