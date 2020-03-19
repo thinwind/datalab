@@ -18,6 +18,7 @@ from django.urls import path
 from django.conf.urls import include
 from rest_framework import routers
 from quickstart import views
+from snippets import views as snippet_views
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
