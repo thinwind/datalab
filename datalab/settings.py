@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'assemblyline.apps.AssemblylineConfig',
-    'snippets.apps.SnippetsConfig'
 ]
 
 MIDDLEWARE = [

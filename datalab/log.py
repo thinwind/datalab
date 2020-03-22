@@ -83,7 +83,7 @@ LOG_SETTINGS = {
             'handlers': ['console_debug'],
             'propagate': True
         },
-        'datalab.datamachine': {
+        'datalab.assemblyline': {
             'handlers': ['console', 'file_info', 'file_error', 'file_debug'],
             'propagate': True
         }
