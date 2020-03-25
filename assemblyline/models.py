@@ -7,8 +7,10 @@ class Machine(models.Model):
         db_table = 'al_machine'
     name = models.CharField(max_length=200, blank=False, default="新生产机")
     input_params = models.TextField(blank=True)
-    engine = models.CharField(max_length=100, blank=False)
+    engine_type = models.CharField(max_length=100, blank=False)
+    engine_body = models.TextField(blank=True)
     output_params = models.TextField(blank=True)
+    product_model = models.CharField(max_length=20,blank=False,default='merge')
     description = models.TextField(blank=True, default="新生产机")
     status = models.IntegerField(default=1)
     owner = models.ForeignKey(
