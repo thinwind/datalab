@@ -27,7 +27,7 @@ output_param_str=json.dumps(ops)
 
 
 if __name__ == "__main__":
-    engine = IdentityEngine(input_param_str,output_param_str)
-    engine.prepare_params()
-    print(engine.input_params)
-    print(engine.output_params)
+    params = "test {{name}} and {age}"
+    input_params = {'name':'some one','age':45}
+    print(params.format(**input_params))
+
