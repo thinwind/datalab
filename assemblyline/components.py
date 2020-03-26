@@ -254,6 +254,7 @@ class WorkMachine:
 STATUS_FAILED="failed"
 STATUS_SUCCESS='success'
 STATUS_CANCELLED='cancelled'
+STATUS_IN_PROGRESS='progressing'
 
 class WorkAssemblyLine:
     def __init__(self,input_params_str=None,output_params_str=None,machines=None,workerline=None):
@@ -266,6 +267,10 @@ class WorkAssemblyLine:
         self.input_params = generate_params(self.input_params_str)
         self.output_params = generate_params(self.output_params_str, False)
         inter_product = input_params
+        self.workerline.status = STATUS_IN_PROGRESS
+        self.workerline.last_subproduct_id = self.machines[0].model.id
+        self.workerline.save()
+
         for machine in self.machines:
             worker = machine.worker
             model = machine.model
@@ -275,14 +280,16 @@ class WorkAssemblyLine:
                 model.save()
                 inter_product.update(worker.product)
             except Exception as e:
-                self.workerline.status = STATUS_FAILED
-                self.workerline.last_machine_id = model.id
                 errmsg = str(e)
-                self.workerline.product = errmsg
+                model.status = STATUS_FAILED
                 model.product = errmsg
                 model.save()
+                self.workerline.status = STATUS_FAILED
+                self.workerline.product = errmsg
+                self.workerline.last_subproduct_id = model.id
                 self.workerline.save()
                 return
         self.workerline.product = inter_product
-        self.workerline.last_machine_id = self.machines[-1].id
+        self.workerline.last_subproduct_id = self.machines[-1].model.id
+        self.workerline.status = STATUS_SUCCESS
         self.workerline.save()

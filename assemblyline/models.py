@@ -91,7 +91,7 @@ class ProductLine(models.Model):
         AssemblyLine, on_delete=models.CASCADE)
     input_params = models.TextField(blank=True)
     output_params = models.TextField(blank=True)
-    machies = models.ManyToManyField(Machine, related_name='+', through='ProductLineMachine', through_fields=(
+    machines = models.ManyToManyField(Machine, related_name='+', through='ProductLineMachine', through_fields=(
         'product_line', 'machine'))
 
 
@@ -101,3 +101,31 @@ class ProductLineMachine(models.Model):
     product_line = models.ForeignKey(ProductLine, on_delete=models.CASCADE)
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
     postion = models.PositiveSmallIntegerField()
+
+class ProductRecord(models.Model):
+    class Meta:
+        db_table = 'al_product_record'
+    imput_params = models.TextField(blank=True)
+    output_params = models.TextField(blank=True)
+    product_line = models.ForeignKey(ProductLine, on_delete=models.DO_NOTHING)
+    assembly_line = models.ForeignKey(AssemblyLine, on_delete=models.DO_NOTHING)
+    assembly_line_name = models.CharField(max_length=200, blank=False, default='产品线名称')
+    product = models.TextField(blank=True)
+    last_subproduct_id = models.BigIntegerField(primary_key=False)
+    status = models.CharField(max_length=50,blank=False,default='progressing')
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey('auth.User', related_name='product_records', on_delete=models.DO_NOTHING)
+
+class SubProducrRecord(models.Model):
+    class Meta:
+        db_table = 'al_sub_product_record'
+    imput_params = models.TextField(blank=True)
+    output_params = models.TextField(blank=True)
+    product_record = models.ForeignKey(ProductRecord,on_delete=models.CASCADE)
+    producer = models.ForeignKey(Machine,on_delete=models.DO_NOTHING)
+    product = models.TextField(blank=True)
+    status = models.CharField(max_length=50,blank=False,default='progressing')
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey('auth.User', related_name='+', on_delete=models.DO_NOTHING)
