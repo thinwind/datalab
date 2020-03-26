@@ -227,12 +227,13 @@ class WorkMachine:
         self.engine_body = engine_body
         self.product_mode = product_mode
 
-    def run(self):
+    def run(self,inputs):
         engine_cls = _ENGINE_REGISTR[self.engine_type]
         self.engine = engine_cls(self.engine_body)
         self.input_params = generate_params(self.input_params_str)
         self.output_params = generate_params(self.output_params_str, False)
         self.prepare_engine()
+        self.input_params.update(inputs)
         try:
             self.inter_product = self.engine.run(self.input_params)
         finally:
@@ -250,13 +251,38 @@ class WorkMachine:
             self.product = {k: v.generate_value(
                 result) for k, v in self.output_params.items()}
 
+STATUS_FAILED="failed"
+STATUS_SUCCESS='success'
+STATUS_CANCELLED='cancelled'
+
 class WorkAssemblyLine:
-    def __init__(self,input_params_str=None,output_params_str=None,machines=None):
+    def __init__(self,input_params_str=None,output_params_str=None,machines=None,workerline=None):
         self.input_params_str = input_params_str
         self.output_params_str = output_params_str
         self.machines = machines
+        self.workerline = workerline
 
     def produce(self):
         self.input_params = generate_params(self.input_params_str)
         self.output_params = generate_params(self.output_params_str, False)
-        
+        inter_product = input_params
+        for machine in self.machines:
+            worker = machine.worker
+            model = machine.model
+            try:
+                worker.run(inter_product)
+                model.product = worker.product
+                model.save()
+                inter_product.update(worker.product)
+            except Exception as e:
+                self.workerline.status = STATUS_FAILED
+                self.workerline.last_machine_id = model.id
+                errmsg = str(e)
+                self.workerline.product = errmsg
+                model.product = errmsg
+                model.save()
+                self.workerline.save()
+                return
+        self.workerline.product = inter_product
+        self.workerline.last_machine_id = self.machines[-1].id
+        self.workerline.save()
