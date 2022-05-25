@@ -6,7 +6,7 @@ djangorestframework-simplejwt==4.4.0
 Faker==4.0.2
 pycodestyle==2.5.0
 Pygments==2.6.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 python-dateutil==2.8.1
 pytz==2019.3
 six==1.14.0
